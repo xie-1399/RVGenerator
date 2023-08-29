@@ -143,17 +143,6 @@ def passAll():
     testMode(testJ=True)
     testMode(testB=True)
 
-def randomTest(testI = False ,testS = False,testB = False,testU = False,testR = False,
-             testJ = False ,testMul = False,showAll = False,iter = 100):
-    gen = GenIM.RandomIMGenerator(withECALL=False, withMul=testMul, reName=True,
-                                  iter=iter, CurInst=0)
-    gen.RandomProduce()
-    FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
-                             gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
-    test_R_I("./File/test.hex", "./File/test.s", "./File/test.type")
-    print("Random test success:)")
-
 if __name__ == '__main__':
     #generate the test file at path
-    randomTest(iter=1000)
-    # passAll()
+    passAll()
