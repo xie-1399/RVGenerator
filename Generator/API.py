@@ -3,7 +3,7 @@ sys.path.append("..")
 # use the api to generate the inst
 import GenIM
 from utils import FileOperation
-from Test import IMTest
+from Gentest import IMTest
 import argparse
 
 '''
@@ -12,6 +12,10 @@ import argparse
 Example:
 test it: /usr/bin/python3.6 API.py --test --iter 1000 --ecall
 gen it : /usr/bin/python3.6 API.py --iter 1000 --mul --ecall
+
+next version 1.2 :
+(1) fix the asm file format
+(2) sim the generator assembly and get the log
 '''
 
 
@@ -22,7 +26,7 @@ def randomTest(testMul = False,withECALL = False,iter = 100):
     gen.RandomProduce()
     FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
                              gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
-    IMTest.test_R_I("../Test/File/test.hex", "../Test/File/test.s", "../Test/File/test.type")
+    IMTest.test_R_I("../Gentest/File/test.hex", "../Gentest/File/test.s", "../Gentest/File/test.type")
     print("Random test success:)")
 
 

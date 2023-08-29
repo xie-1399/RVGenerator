@@ -1,7 +1,7 @@
 
 # this file compile the assemble file / instruction hex file / and binary file
 
-rootPath = "../Test/File/"
+rootPath = "../Gentest/File/"
 
 def convertS(Instructions_list_assembly,filename,newfile = True):
     assert str(filename).endswith(".s") or str(filename).endswith(".S"),"the assembly file should be end with .s or .S"
@@ -46,7 +46,7 @@ def convertT(Instructions_list_type,filename,newfile = True):
             else:
                 f.write(type + '\n')
 
-
+# Todo with combine format
 def convertCombine(Instructions_list_assembly,Instructions_list_binary,Instructions_list_hex,Instructions_list_type,
                filename,newfile = True):
     assert str(filename).endswith(".asm"), "the combine file should be end with .asm"
