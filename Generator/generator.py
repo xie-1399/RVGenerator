@@ -167,7 +167,7 @@ class RVIMGenerator():
         imm_binary = "{0:020b}".format(imm_decimal)
         instructionBinary = imm_binary + rd_Binary + opcode
         instructionHex = self.BinarytoHex(instructionBinary)
-        instructionAssembly = str(name).lower() + ' ' + self.REG_NAME_ORDER[rd] + ',' + str(self.signextend(imm_decimal,20))
+        instructionAssembly = str(name).lower() + ' ' + self.REG_NAME_ORDER[rd] + ',' + str(imm_decimal)
         instructionType = 'U'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 

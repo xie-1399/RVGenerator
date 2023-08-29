@@ -33,6 +33,15 @@ def testcommon(hexpath,asmpath,typepath,useMul):
             continue
         elif(type == 'J'):
             continue
+        elif(type == 'U'):
+            ref = isa_model.decodeHex(source)
+            s_imm = str(ref).split(",")[-1].replace('\n', "").strip()
+            u_imm = str(dut).split(",")[-1].replace('\n', "").strip()
+            if (int(s_imm) >= 0):
+                assert s_imm == u_imm
+            else:
+                ref = str(ref).replace(s_imm, u_imm)
+                assert int(u_imm) - int(s_imm) == 1048576
 
         elif (type == 'LOAD'):
             ref = str(isa_model.decodeHex(source))
@@ -147,3 +156,4 @@ def randomTest(testI = False ,testS = False,testB = False,testU = False,testR = 
 if __name__ == '__main__':
     #generate the test file at path
     randomTest(iter=1000)
+    # passAll()
