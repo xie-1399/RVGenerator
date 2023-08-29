@@ -6,11 +6,12 @@ import random
 
 class RVIMGenerator():
 
-    def __init__(self):
+    def __init__(self,reName = False):
         self.Instructions_list_binary = []
         self.Instructions_list_assembly = []
         self.Instructions_list_hex = []
         self.Instructions_list_type = []
+        self.REG_NAME_ORDER = Misc.REG_NAME if reName else Misc.REG_NAME_ORDER
 
     def addInstruction(self,instructionBinary, instructionHex, instructionAssembly, instructionType):
         self.Instructions_list_hex.append(instructionHex)
@@ -56,8 +57,8 @@ class RVIMGenerator():
                                                                      randomArray=randomArray)
         instructionBinary = funct7 + rs2Binary + rs1Binary + funct3 + rd_Binary + opcode
         instructionHex = self.BinarytoHex(instructionBinary)
-        instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rd] + "," + \
-                              Misc.REG_NAME_ORDER[rs1] + ',' + Misc.REG_NAME_ORDER[rs2]
+        instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rd] + "," + \
+                              self.REG_NAME_ORDER[rs1] + ',' + self.REG_NAME_ORDER[rs2]
         instructionType = 'R'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
@@ -80,25 +81,27 @@ class RVIMGenerator():
             shamt_binary = "{0:05b}".format(shamt_random)
             instructionBinary = imm + shamt_binary + rs1Binary + funct3 + rd_Binary + opcode
             instructionHex = self.BinarytoHex(instructionBinary)
-            instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rd] + "," + \
-                                  Misc.REG_NAME_ORDER[rs1] + ',' + str(shamt_random)
-            instructionType = 'I'
+            instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rd] + "," + \
+                                  self.REG_NAME_ORDER[rs1] + ',' + str(shamt_random)
+            instructionType = 'SHIFTI'
+
         elif name in Misc.LOAD_INSTRUCTION_NAMES:
             memoryOffset = np.random.randint(0, 4095)
             memory_binary = "{0:012b}".format(memoryOffset)
             instructionBinary = memory_binary + rs1Binary + funct3 + rd_Binary + opcode
             instructionHex = self.BinarytoHex(instructionBinary)
-            instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rd] + "," + str(memoryOffset) + '(' + \
-                                  Misc.REG_NAME_ORDER[rs1] + ')'
-            instructionType = 'I'
-        elif name in Misc.ECALL_EBREAK_NAMES:
+            instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rd] + "," + str(self.signextend(memoryOffset,12)) + '(' + \
+                                  self.REG_NAME_ORDER[rs1] + ')'
+            instructionType = 'LOAD'
+
+        elif name in Misc.ECALL_EBREAK_NAMES: #two special types inst
             if (name) == "ECALL":
                 imm = '000000000000'
                 instructionAssembly = 'ecall'
             else:
                 imm = '000000000001'
                 instructionAssembly = 'ebreak'
-            instructionBinary = imm + rs1Binary + funct3 + rd_Binary + opcode
+            instructionBinary = imm + "00000" + funct3 + "00000" + opcode
             instructionHex = self.BinarytoHex(instructionBinary)
             instructionType = 'I'
 
@@ -107,8 +110,8 @@ class RVIMGenerator():
             imm_binary = "{0:012b}".format(imm_decimal)
             instructionBinary = imm_binary + rs1Binary + funct3 + rd_Binary + opcode
             instructionHex = self.BinarytoHex(instructionBinary)
-            instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rd] + "," + Misc.REG_NAME_ORDER[
-                rs1] + "," + str(imm_decimal)
+            instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rd] + "," + self.REG_NAME_ORDER[
+                rs1] + "," + str(self.signextend(imm_decimal,12))
             instructionType = 'I'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
@@ -124,13 +127,13 @@ class RVIMGenerator():
         imm_decimal = 2 * np.random.randint(0, 2047)
         imm_binary = "{0:012b}".format(imm_decimal)
         instructionBinary = imm_binary[0:7] + rs2Binary + rs1Binary + funct3 + imm_binary[7:] + opcode
-        instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rs2] + "," + str(imm_decimal) + '(' + \
-                              Misc.REG_NAME_ORDER[rs1] + ')'
+        instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rs2] + "," + str(self.signextend(imm_decimal,12)) + '(' + \
+                              self.REG_NAME_ORDER[rs1] + ')'
         instructionHex = self.BinarytoHex(instructionBinary)
         instructionType = 'S'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
-    def generator_B(self,name,randomArray):
+    def generator_B(self,name,randomArray,iter,currentInst):
         # print('Gen B Type')
         try:
             opcode = Misc.I_OPCODES[name]
@@ -140,15 +143,16 @@ class RVIMGenerator():
         rs1, rs2, rs1Binary, rs2Binary = self.genRandomReg(users1=True, users2=True, userd=False,
                                                            randomArray=randomArray)
         # the imm should be in the instruction number and %4 == 0
-        imm_decimal = 2 * np.random.randint(0, (len(self.Instructions_list_binary) + 1) * 2)
-        while imm_decimal == len(self.Instructions_list_binary) * 4:
-            return
+        imm_decimal = currentInst * 4
+        while imm_decimal == currentInst * 4: #stop gen branch loop forever
+            imm_decimal = 2 * np.random.randint(0, iter * 2)
+
         imm_binary = "{0:012b}".format(imm_decimal)
         instructionBinary = imm_binary[0] + imm_binary[2:8] + rs2Binary + rs1Binary + funct3 + \
                              imm_binary[8:] + imm_binary[1] + opcode
         instructionHex = self.BinarytoHex(instructionBinary)
         instructionType = 'B'
-        instructionAssembly = str(name).lower() + " " + Misc.REG_NAME_ORDER[rs1] + "," + Misc.REG_NAME_ORDER[rs2] + ',' + str(imm_decimal)
+        instructionAssembly = str(name).lower() + " " + self.REG_NAME_ORDER[rs1] + "," + self.REG_NAME_ORDER[rs2] + ',' + str(imm_decimal)
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
     def generator_U(self,name,randomArray):
@@ -163,11 +167,12 @@ class RVIMGenerator():
         imm_binary = "{0:020b}".format(imm_decimal)
         instructionBinary = imm_binary + rd_Binary + opcode
         instructionHex = self.BinarytoHex(instructionBinary)
-        instructionAssembly = str(name).lower() + ' ' + Misc.REG_NAME_ORDER[rd] + ',' + str(imm_decimal)
+        instructionAssembly = str(name).lower() + ' ' + self.REG_NAME_ORDER[rd] + ',' + str(self.signextend(imm_decimal,20))
         instructionType = 'U'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
-    def generator_J(self,name,randomArray):
+    # some different from the U model
+    def generator_J(self,name,randomArray,iter,currentInst):
         # print('Gen J Type')
         try:
             opcode = Misc.I_OPCODES[name]
@@ -175,13 +180,13 @@ class RVIMGenerator():
             raise Exception("please use illegal name to generator J type instruction")
         rd, rd_Binary = self.genRandomReg(users1=False, users2=False, userd=True,
                                           randomArray=randomArray)
-        imm_decimal = 2 * np.random.randint(0, (len(self.Instructions_list_binary) + 1) * 2)
-        while imm_decimal == len(self.Instructions_list_binary) * 4:
-            return
+        imm_decimal = currentInst * 4
+        while imm_decimal == currentInst * 4:  # stop gen branch loop forever
+            imm_decimal = 2 * np.random.randint(0, iter * 2)
         imm_binary = "{0:020b}".format(imm_decimal)
         instructionBinary = imm_binary[0] + imm_binary[10:] + imm_binary[9] + imm_binary[1:9] + rd_Binary + opcode
         instructionHex = self.BinarytoHex(instructionBinary)
-        instructionAssembly = str(name).lower() + ' ' + Misc.REG_NAME_ORDER[rd] + ',' + str(imm_decimal)
+        instructionAssembly = str(name).lower() + ' ' + self.REG_NAME_ORDER[rd] + ',' + str(imm_decimal)
         instructionType = 'J'
         self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
 
@@ -190,5 +195,11 @@ class RVIMGenerator():
         print(self.Instructions_list_assembly)
         print(self.Instructions_list_hex)
         print(self.Instructions_list_type)
+
+    def signextend(self,number, width):
+        if(number < pow(2,width - 1)): return number
+        sign = True if (format(number, 'b')[0] == '1') else False
+        res = number - pow(2, width) if sign else number
+        return res
 
 

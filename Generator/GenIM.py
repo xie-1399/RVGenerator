@@ -3,18 +3,22 @@
 import random
 from utils import Misc
 import numpy as np
-from generator import RVIMGenerator
+from Generator import generator
 
-class RandomIMGenerator(RVIMGenerator):
-    def __init__(self, withMul, withECALL):
-        super().__init__()
+class RandomIMGenerator(generator.RVIMGenerator):
+    def __init__(self, reName,withMul, withECALL,iter,CurInst): #start from 0
+        super().__init__(reName)
         self.withMul = withMul
         self.withECALL = withECALL
+        self.iter = iter
+        self.cur = CurInst
 
-    def Gen_r(self,iter = 1,REGISTERS_NUMBER = 32):
+    def Gen_r(self,iter = 1,REGISTERS_NUMBER = 32,OnlyMul = False):
         for idx in range(iter):
             name = list(Misc.I_R_TYPE_NAME)[random.randint(0, len(Misc.I_R_TYPE_NAME) - 1)] if not self.withMul else \
                 list(Misc.R_TYPE_NAME)[random.randint(0, len(Misc.R_TYPE_NAME) - 1)]
+            if(OnlyMul):
+                name = list(Misc.M_EXTENSION_NAMES)[random.randint(0, len(Misc.M_EXTENSION_NAMES) - 1)]
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
             self.generator_R(name,randomArray=REGISTERS_TO_USE)
 
@@ -35,13 +39,13 @@ class RandomIMGenerator(RVIMGenerator):
         for idx in range(iter):
             name = list(Misc.B_TYPE_NAME)[random.randint(0, len(Misc.B_TYPE_NAME) - 1)]
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
-            self.generator_B(name,randomArray=REGISTERS_TO_USE)
+            self.generator_B(name,randomArray=REGISTERS_TO_USE,iter = self.iter,currentInst = self.cur)
 
     def Gen_j(self,iter = 1,REGISTERS_NUMBER = 32):
         for idx in range(iter):
             name = list(Misc.J_TYPE_NAME)[random.randint(0, len(Misc.J_TYPE_NAME) - 1)]
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
-            self.generator_J(name,randomArray=REGISTERS_TO_USE)
+            self.generator_J(name,randomArray=REGISTERS_TO_USE,iter = self.iter,currentInst = self.cur)
 
     def Gen_u(self,iter = 1,REGISTERS_NUMBER = 32):
         for idx in range(iter):
@@ -50,11 +54,8 @@ class RandomIMGenerator(RVIMGenerator):
             self.generator_U(name,randomArray=REGISTERS_TO_USE)
 
     def RandomProduce(self):
-        func = [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
-        random.choice(func)()
-
-if __name__ == '__main__':
-    gen = RandomIMGenerator(withECALL=False,withMul=True)
-    for idx in range(100):
-        gen.RandomProduce()
-    gen.show()
+        for i in range(self.iter):
+            func = [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
+            genFunc = random.choice(func)
+            genFunc()
+            self.cur += 1
