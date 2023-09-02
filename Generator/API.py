@@ -22,9 +22,9 @@ next version 1.2 :
 
 def randomTest(testMul = False,withECALL = False,iter = 100,onlyArith = False):
     gen = GenIM.RandomIMGenerator(withECALL= withECALL, withMul=testMul, reName=True,
-                                  iter=iter, CurInst=0)
+                                  iter=iter, CurInst=0,onlyArith=onlyArith)
     assert not testMul,"test mul using another way"
-    gen.RandomProduce(onlyArith=onlyArith)
+    gen.RandomProduce()
     FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
                              gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
     IMTest.test_R_I("../Gentest/File/test.hex", "../Gentest/File/test.s", "../Gentest/File/test.type")
@@ -34,8 +34,8 @@ def randomTest(testMul = False,withECALL = False,iter = 100,onlyArith = False):
 # can gen mul and ecall/ebreak instruction
 def randomGen(testMul = False,withECALL = False,iter = 100,onlyArith=False):
     gen = GenIM.RandomIMGenerator(withECALL= withECALL, withMul=testMul, reName=True,
-                                  iter=iter, CurInst=0)
-    gen.RandomProduce(onlyArith=onlyArith)
+                                  iter=iter, CurInst=0,onlyArith=onlyArith)
+    gen.RandomProduce()
     FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
                              gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
 

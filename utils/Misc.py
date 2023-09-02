@@ -36,6 +36,9 @@ I_R_TYPE_NAME = {'ADD','SUB','XOR','OR','AND','SLL','SRL','SRA','SLT','SLTU'}
 M_EXTENSION_NAMES = {'MUL', 'MULH', 'MULHSU', 'MULHU', 'DIV', 'DIVU', 'REM', 'REMU'}
 R_TYPE_NAME = M_EXTENSION_NAMES.union(I_R_TYPE_NAME)
 
+#use the ArithOnly
+ARITH_NAME = {'ADDI','XORI','ORI','ANDI','SLLI','SRLI','SRAI','SLTI','SLTIU'}
+
 #call S type name
 STORE_INSTRUCTION_NAMES = {'SB', 'SH', 'SW'}
 

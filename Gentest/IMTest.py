@@ -71,7 +71,7 @@ def test_R_M(hexpath,asmpath,typepath):
 def testMode(testI = False ,testS = False,testB = False,testU = False,testR = False,
              testJ = False ,testMul = False,showAll = False):
     gen = GenIM.RandomIMGenerator(withECALL=False, withMul=testMul, reName=True,
-                                  iter = 100, CurInst = 0)
+                                  iter = 100, CurInst = 0,onlyArith = False)
     if(testMul):
         for idx in range(100):
             gen.Gen_r(OnlyMul=testMul)

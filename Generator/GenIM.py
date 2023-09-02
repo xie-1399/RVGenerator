@@ -6,9 +6,10 @@ import numpy as np
 from Generator import generator
 
 class RandomIMGenerator(generator.RVIMGenerator):
-    def __init__(self, reName,withMul, withECALL,iter,CurInst): #start from 0
+    def __init__(self, reName,withMul, withECALL,iter,CurInst,onlyArith): #start from 0
         super().__init__(reName)
         self.withMul = withMul
+        self.Arith = onlyArith
         self.withECALL = withECALL
         self.iter = iter
         self.cur = CurInst
@@ -22,10 +23,12 @@ class RandomIMGenerator(generator.RVIMGenerator):
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
             self.generator_R(name,randomArray=REGISTERS_TO_USE)
 
-    def Gen_i(self,iter = 1,REGISTERS_NUMBER = 32,withECALL = False):
+    def Gen_i(self,iter = 1,REGISTERS_NUMBER = 32):
         for idx in range(iter):
             name = list(Misc.FULL_I_TYPE_NAME)[random.randint(0, len(Misc.FULL_I_TYPE_NAME) - 1)] if self.withECALL \
                 else list(Misc.I_TYPENAME_NOECALL)[random.randint(0, len(Misc.I_TYPENAME_NOECALL) - 1)]
+            if(self.Arith):
+                name = list(Misc.ARITH_NAME)[random.randint(0, len(Misc.ARITH_NAME) - 1)]
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
             self.generator_I(name,randomArray=REGISTERS_TO_USE)
 
@@ -54,9 +57,9 @@ class RandomIMGenerator(generator.RVIMGenerator):
             self.generator_U(name,randomArray=REGISTERS_TO_USE)
 
 
-    def RandomProduce(self,onlyArith = False):
+    def RandomProduce(self):
         for i in range(self.iter):
-            func = [self.Gen_i,self.Gen_r] if (onlyArith) else [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
+            func = [self.Gen_i,self.Gen_r] if (self.Arith) else [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
             genFunc = random.choice(func)
             genFunc()
             self.cur += 1
