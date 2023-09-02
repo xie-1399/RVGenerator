@@ -1,7 +1,9 @@
 import sys
+
+from Generator import GenIM
+
 sys.path.append("..")
 # use the api to generate the inst
-import GenIM
 from utils import FileOperation
 from Gentest import IMTest
 import argparse
