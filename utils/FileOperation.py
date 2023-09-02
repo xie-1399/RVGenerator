@@ -12,6 +12,7 @@ def convertS(Instructions_list_assembly,filename,newfile = True):
                 f.write(asm)
             else:
                 f.write(asm + '\n')
+        f.close()
 
 
 def convertB(Instructions_list_binary,filename,newfile = True):
@@ -23,6 +24,7 @@ def convertB(Instructions_list_binary,filename,newfile = True):
                 f.write(bina)
             else:
                 f.write(bina + '\n')
+        f.close()
 
 
 def convertH(Instructions_list_hex,filename,newfile = True,withPrefix = False):
@@ -35,6 +37,7 @@ def convertH(Instructions_list_hex,filename,newfile = True,withPrefix = False):
                 f.write(hex)
             else:
                 f.write(hex + '\n')
+        f.close()
 
 def convertT(Instructions_list_type,filename,newfile = True):
     assert str(filename).endswith(".type"),"the Type file should be end with .type"
@@ -45,20 +48,23 @@ def convertT(Instructions_list_type,filename,newfile = True):
                 f.write(type)
             else:
                 f.write(type + '\n')
+        f.close()
 
-# Todo with combine format
 def convertCombine(Instructions_list_assembly,Instructions_list_binary,Instructions_list_hex,Instructions_list_type,
                filename,newfile = True):
     assert str(filename).endswith(".asm"), "the combine file should be end with .asm"
     index = 0
     writeWay = "w+" if newfile else "a+"
     with open(rootPath + filename,writeWay) as f:
+        f.write('test' + '.elf:     file format elf32-littleriscv\n\n\n')
+        f.write('Disassembly of section .text:\n\n00000000 <main>:\n')
         for asm,bina,hex,type in zip(Instructions_list_assembly,Instructions_list_binary,Instructions_list_hex,Instructions_list_type):
             if(index == len(Instructions_list_hex) - 1):
-                f.write(hex + "\t" + asm + "\t" + bina + '\t' + type)
+                f.write(str(index * 4).zfill(8) + "\t" + hex + "\t" + asm + '\t')
             else:
-                f.write(hex + "\t" + asm + "\t" + bina + '\t' + type + '\n')
+                f.write(str(index * 4).zfill(8) + "\t" + hex + "\t" + asm + '\t' + '\n')
             index += 1
+        f.close()
 
 
 def convertAll(Instructions_list_assembly,Instructions_list_binary,Instructions_list_hex,Instructions_list_type,

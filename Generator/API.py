@@ -14,7 +14,7 @@ test it: /usr/bin/python3.6 API.py --test --iter 1000 --ecall
 gen it : /usr/bin/python3.6 API.py --iter 1000 --mul --ecall
 
 next version 1.2 :
-(1) fix the asm file format
+(1) fix the asm file format (√)
 (2) sim the generator assembly and get the log
 (3) Update the ReadMe 
 '''
