@@ -20,11 +20,11 @@ next version 1.2 :
 '''
 
 
-def randomTest(testMul = False,withECALL = False,iter = 100):
+def randomTest(testMul = False,withECALL = False,iter = 100,onlyArith = False):
     gen = GenIM.RandomIMGenerator(withECALL= withECALL, withMul=testMul, reName=True,
                                   iter=iter, CurInst=0)
     assert not testMul,"test mul using another way"
-    gen.RandomProduce()
+    gen.RandomProduce(onlyArith=onlyArith)
     FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
                              gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
     IMTest.test_R_I("../Gentest/File/test.hex", "../Gentest/File/test.s", "../Gentest/File/test.type")
@@ -32,10 +32,10 @@ def randomTest(testMul = False,withECALL = False,iter = 100):
 
 
 # can gen mul and ecall/ebreak instruction
-def randomGen(testMul = False,withECALL = False,iter = 100):
+def randomGen(testMul = False,withECALL = False,iter = 100,onlyArith=False):
     gen = GenIM.RandomIMGenerator(withECALL= withECALL, withMul=testMul, reName=True,
                                   iter=iter, CurInst=0)
-    gen.RandomProduce()
+    gen.RandomProduce(onlyArith=onlyArith)
     FileOperation.convertAll(gen.Instructions_list_assembly, gen.Instructions_list_binary,
                              gen.Instructions_list_hex, gen.Instructions_list_type, filenamePrefix="test", newfile=True)
 
@@ -45,6 +45,7 @@ if __name__ == '__main__':
     parser.add_argument('--mul',action='store_true',help="gen with mul")
     parser.add_argument('--ecall',action='store_true',help="gen with ecall")
     parser.add_argument('--iter',type = int, required=True ,help="inst number")
+    parser.add_argument('--arith',action='store_true',help = "gen the arith inst")
     args = parser.parse_args()
 
     withECALL = args.ecall
@@ -52,8 +53,8 @@ if __name__ == '__main__':
     iter = args.iter
 
     if(args.test):
-        randomTest(withECALL= withECALL,iter = iter)
+        randomTest(withECALL= withECALL,iter = iter,onlyArith=args.arith)
     else:
-        randomGen(withECALL=withECALL,iter = iter,testMul = testMul)
+        randomGen(withECALL=withECALL,iter = iter,testMul = testMul,onlyArith=args.arith)
 
 

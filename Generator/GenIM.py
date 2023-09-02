@@ -53,9 +53,10 @@ class RandomIMGenerator(generator.RVIMGenerator):
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
             self.generator_U(name,randomArray=REGISTERS_TO_USE)
 
-    def RandomProduce(self):
+
+    def RandomProduce(self,onlyArith = False):
         for i in range(self.iter):
-            func = [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
+            func = [self.Gen_i,self.Gen_r] if (onlyArith) else [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
             genFunc = random.choice(func)
             genFunc()
             self.cur += 1
