@@ -3,15 +3,21 @@
 
 rootPath = "../Gentest/File/"
 
+#to let the .s file runable,should set segment
+
 def convertS(Instructions_list_assembly,filename,newfile = True):
     assert str(filename).endswith(".s") or str(filename).endswith(".S"),"the assembly file should be end with .s or .S"
     writeWay = "w+" if newfile else "a+"
     with open(rootPath + filename,writeWay) as f:
+        f.write("\t" + ".text" + "\n")
+        f.write("\t" + ".global _start" + "\n")
+        f.write("\n")
+        f.write("_start:" + "\n")
         for index,asm in enumerate(Instructions_list_assembly):
             if(index == len(Instructions_list_assembly) - 1):
-                f.write(asm)
+                f.write("\t" + asm)
             else:
-                f.write(asm + '\n')
+                f.write("\t" + asm + '\n')
         f.close()
 
 
