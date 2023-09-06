@@ -19,6 +19,24 @@ class RVIMGenerator():
         self.Instructions_list_binary.append(instructionBinary)
         self.Instructions_list_type.append(instructionType)
 
+    #use for the reg initial value(the li extension -> just < 4096 with addi)
+    def setInitialReg(self,initial):
+        if(initial):
+            imm_decimal = 0
+            opcode = "0010011"
+            funct3 = "000"
+            rs1Binary = "00000"
+            imm_binary = "{0:012b}".format(imm_decimal)
+            for reg in range(len(self.REG_NAME_ORDER)):
+                rd_Binary = "{0:05b}".format(reg)
+                instructionBinary = imm_binary + rs1Binary + funct3 + rd_Binary + opcode
+                instructionHex = self.BinarytoHex(instructionBinary)
+                instructionAssembly = "li" + " " + self.REG_NAME_ORDER[reg] + "," + str(imm_decimal)
+                instructionType = 'I'
+                self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
+        else:
+            pass
+
     def genRandomReg(self,users1, users2, userd, randomArray):
         rs1 = random.choice(randomArray)
         rs1Binary = "{0:05b}".format(rs1)
