@@ -36,6 +36,20 @@ class RVIMGenerator():
                 self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
         else:
             pass
+    #use for the ebreak for the end of program
+    def addEbreak(self,breakpoint):
+        if(breakpoint):
+            opcode = Misc.I_OPCODES["EBREAK"]
+            funct3 = Misc.I_FUNCT3["EBREAK"]
+            imm = '000000000001'
+            instructionBinary = imm + "00000" + funct3 + "00000" + opcode
+            instructionHex = self.BinarytoHex(instructionBinary)
+            instructionType = 'I'
+            instructionAssembly = 'ebreak'
+            self.addInstruction(instructionBinary, instructionHex, instructionAssembly, instructionType)
+        else:
+            pass
+
 
     def genRandomReg(self,users1, users2, userd, randomArray):
         rs1 = random.choice(randomArray)

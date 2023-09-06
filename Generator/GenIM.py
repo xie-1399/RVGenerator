@@ -56,10 +56,14 @@ class RandomIMGenerator(generator.RVIMGenerator):
             REGISTERS_TO_USE = np.random.randint(0, REGISTERS_NUMBER, size=10)
             self.generator_U(name,randomArray=REGISTERS_TO_USE)
 
-    def RandomProduce(self,initial):
+    def RandomProduce(self,initial,ebreak = True):
         self.setInitialReg(initial)
         for i in range(self.iter):
             func = [self.Gen_i,self.Gen_r] if (self.Arith) else [self.Gen_i,self.Gen_r,self.Gen_s,self.Gen_u,self.Gen_j,self.Gen_b]
             genFunc = random.choice(func)
             genFunc()
             self.cur += 1
+        if ebreak:
+            self.addEbreak(breakpoint = ebreak)
+
+
